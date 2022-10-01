@@ -2,9 +2,10 @@ import { SlashCommandBuilder,ChatInputCommandInteraction,Collection } from 'disc
 import { Command } from '../Command';
 
 const ping:Command = {
-	data: new SlashCommandBuilder()
+	data: async function() {return new SlashCommandBuilder()
 		.setName('ping')
-		.setDescription('Replies with Pong!'),
+		.setDescription('Replies with Pong!')
+	},
 	async execute(interaction:ChatInputCommandInteraction,commands:Collection<String,Command>) {
 		await interaction.reply({content:'Pong!'});
 	},

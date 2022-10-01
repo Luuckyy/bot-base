@@ -5,9 +5,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const reload:Command = {
-	data: new SlashCommandBuilder()
+	data: async function (){ return new SlashCommandBuilder()
 		.setName('reload')
-		.setDescription('Reloads commands : Admin only'),
+		.setDescription('Reloads commands : Admin only')
+    },
 	async execute(interaction:ChatInputCommandInteraction,commands:Collection<String,Command>) {
         if(interaction.user.id == "168495998652514304"){
             spawn(`npm run commands`,{ stdio:"inherit", shell:true});

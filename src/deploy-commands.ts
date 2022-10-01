@@ -17,10 +17,11 @@ async function run() {
     const commands:RESTPostAPIApplicationCommandsJSONBody[] = [];
     const commandsPath = path.join(__dirname, 'commands');
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
+    for await(const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
-        const command:Command = require(filePath);
-        commands.push(command.data.toJSON());
+        const command:Command = await require(filePath);
+        const d = await command.data();
+        commands.push(d.toJSON());
     }
 
     const rest = new REST({ version: '10' }).setToken(discord_token?.value);
@@ -48,8 +49,9 @@ async function run() {
     const commandFilesAdmin = fs.readdirSync(commandsPathAdmin).filter(file => file.endsWith('.js'));
     for (const file of commandFilesAdmin) {
         const filePath = path.join(commandsPathAdmin, file);
-        const commandAdmin:Command = require(filePath);
-        commandsAdmin.push(commandAdmin.data.toJSON());
+        const commandAdmin:Command = await require(filePath);
+        const d = await commandAdmin.data();
+        commandsAdmin.push(d.toJSON());
     }
     rest.put(Routes.applicationGuildCommands(clientId?.value,guildId?.value), { body: commandsAdmin })
         .then((data:any) => console.log(`Successfully registered ${data.length} application commands.`))
@@ -60,5 +62,6 @@ async function run() {
     await clientMongo.close();
     console.error
   }
+  await clientMongo.close();
 }
 run().catch(console.dir);

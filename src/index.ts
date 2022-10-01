@@ -26,10 +26,11 @@ async function run() {
     
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
+        const command = await require(filePath);
+        const d = await command.data();
         // Set a new item in the Collection
         // With the key as the command name and the value as the exported module
-        commands.set(command.data.name, command);
+        commands.set(d.name, command);
     }
 
     const commandsPathAdmin = path.join(__dirname, 'admincommands');
@@ -37,10 +38,11 @@ async function run() {
     
     for (const file of commandFilesAdmin) {
         const filePathAdmin = path.join(commandsPathAdmin, file);
-        const commandAdmin = require(filePathAdmin);
+        const commandAdmin = await require(filePathAdmin);
+        const d = await commandAdmin.data();
         // Set a new item in the Collection
         // With the key as the command name and the value as the exported module
-        commands.set(commandAdmin.data.name, commandAdmin);
+        commands.set(d.name, commandAdmin);
     }
 
     clientDiscord.on('interactionCreate', async interaction => {
