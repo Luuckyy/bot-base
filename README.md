@@ -2,43 +2,31 @@
 
 Voici un bot [Discord.js](https://discord.js.org/) très simple qui permet de commencer très facilement et rapidement.
 
-## Initialisation
+# Informations
 
-### 1. MongoDB
+Il y a un boilerplate pour la création de SlashCommands avec deux commandes admin
+- /reload : Permet de mettre à jour toutes vos commandes (fichier typescript dans `src/admincommands` et `src/commands`) sur Discord, (création/suppression/modification)
+- /mini-reload : Permet de mettre à jour toutes les commandes disponible globalement (fichier typescript dans `src/commands`), (création/suppression/modification)
 
-On utilisera MongoDB pour notre base de données car elle est très simple et une des plus connus.
+# Initialisation
 
-Vous devrez donc créer compte sur [MongoDB](https://mongodb.com)
+Créez un fichier .env pour stocker certaines variables
 
-Une fois votre compte créé, vous devez faire un projet, ils y a de bonne chance qu'ils le soient déjà !
-Vous pouvez ensuite venir cliquer sur le bouton de création de base de données ![Screen bouton création de base de données](https://imgur.com/jEwkluu.png)
-
-Vous pouvez continuer en choisissant l'offre que vous désirer, la gratuite convient bien évidemment, ensuite vos logs et adresse ip pour finir.
-
-Une fois le tout finis vous pouvez cliquer sur "Connect"
-
-![Bouton Connect](https://imgur.com/89Cquax.png)
-
-Ensuite sélectionner "Connect your application"
-
-![Bouton Connect your application](https://imgur.com/Ie1iycf.png)
-
-Vous pouvez enfin cliquer sur le bouton Copier/Coller
-
-![Bouton Copier/Coller](https://imgur.com/gUseq2q.png)
-
-Vous devrez remplacer ces chaines, présentes dans src/index.ts et src/deploy-commands.ts, par votre chaine copier/coller, n'oubliez pas de remplacer <password> par le mot de passe de votre user
-![Chaine à remplacer](https://imgur.com/DozY60J.png)
-
-Vous devrez aussi créer une base de données nommées discord_bot sur ce projet de la manière dont vous voulez (MongoShell, Mongo Compass, Studio 3T ...)
-
-Elle possèdera une collection env avec 3 documents :
-
+```properties
+DATABASE_URL="file:./dev.db" #Don't change unless you changed the location or name of your database
+DISCORD_TOKEN=YOUR_DISCORD_TOKEN
+CLIENT_ID=YOUR_CLIENT_ID #Application id of the bot used to reload admin commands, Discord Developer Portal > "General Information" > "Application id"
+GUILD_ID=YOUR_GUILD_ID #Guild id of the server used to reload admin commands, Enable developer mode in Discord > Right-click the server title > "Copy ID"
 ```
-db.env.insertMany([
-{field:"DISCORD_TOKEN",value:"<discord_token>"},
-{field:"CLIENT_ID",value:"<bot_client_id>"},
-{field:"GUILD_ID",value:"<private_server_guild_id>"}
-])
-```
-NOTE : Le champ GUILD_ID sera utile pour vous uniquement car il s'agira du serveur pour exécuter des commandes qu'uniquement vous pouvez utiliser
+
+# Démarrage
+
+Rien de plus simple qu'un `npm start` pour lancer votre bot et c'est bon !
+
+Une petite commande à savoir, `npm run commands` qui permet d'exécuter d'envoyer vos commandes à Discord, comme le ferais `/reload`. C'est très utile pour initialiser les commandes la première fois. Vous devriez essayer (sinon vous n'aurez jamais vos commandes de disponibles...)
+
+
+# Prisma
+
+Voici la document de Prisma qui est très clair !
+Si vous voulez, vous pouvez utiliser un autre ORM ou l'implémenter vous même. Prisma est ici inclus en tant que dépendance mais n'est pas utilisé. Toutes les lignes à supprimer sont présentes dans index.ts .

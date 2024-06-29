@@ -6,8 +6,8 @@ const ping:Command = {
 		.setName('ping')
 		.setDescription('Replies with Pong!')
 	},
-	async execute(interaction:ChatInputCommandInteraction,commands:Collection<String,Command>) {
-		await interaction.reply({content:'Pong!'});
+	async execute(interaction:ChatInputCommandInteraction) {
+		await interaction.reply({content:'Pang!'});
 	},
 };
 

@@ -1,43 +1,43 @@
 import  { REST, Routes,RESTPostAPIApplicationCommandsJSONBody } from 'discord.js';
-import { MongoClient } from "mongodb";
 import path from 'node:path';
 import fs from 'node:fs';
 import { Command } from './Command';
+import dotenv from 'dotenv';
+dotenv.config()
 
-const uri = "mongodb+srv://admub:<password>@cluster0.3o6cn.mongodb.net/?retryWrites=true&w=majority";
-const clientMongo = new MongoClient(uri);
 async function run() {
   try {
-    const database = clientMongo.db('discord_bot');
-    const env_var = database.collection('env');
-    const discord_token = await env_var.findOne({field: 'DISCORD_TOKEN' });
-    const clientId = await env_var.findOne({field: 'CLIENT_ID' });
-    const guildId = await env_var.findOne({field: 'GUILD_ID' });
+    const discord_token = process.env.DISCORD_TOKEN || 'null';
+    const clientId = process.env.CLIENT_ID || 'null';
+    const guildId = process.env.GUILD_ID || 'null'
 
     const commands:RESTPostAPIApplicationCommandsJSONBody[] = [];
     const commandsPath = path.join(__dirname, 'commands');
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
     for await(const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
+        if(require.resolve(filePath)){
+          delete require.cache[require.resolve(filePath)]
+        }
         const command:Command = await require(filePath);
         const d = await command.data();
         commands.push(d.toJSON());
     }
 
-    const rest = new REST({ version: '10' }).setToken(discord_token?.value);
+    const rest = new REST({ version: '10' }).setToken(discord_token);
 
     //Delete every command
-    rest.put(Routes.applicationGuildCommands(clientId?.value, guildId?.value), { body: [] })
+    rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
     .then(() => console.log('Successfully deleted all guild commands.'))
     .catch(console.error);
 
     // for global commands
-    rest.put(Routes.applicationCommands(clientId?.value), { body: [] })
+    rest.put(Routes.applicationCommands(clientId), { body: [] })
     .then(() => console.log('Successfully deleted all application commands.'))
     .catch(console.error);
 
 
-    rest.put(Routes.applicationCommands(clientId?.value), { body: commands })
+    rest.put(Routes.applicationCommands(clientId), { body: commands })
         .then((data:any) => console.log(`Successfully registered ${data.length} application commands.`))
         .catch(console.error);
 
@@ -46,22 +46,22 @@ async function run() {
     */
     const commandsAdmin:RESTPostAPIApplicationCommandsJSONBody[] = [];
     const commandsPathAdmin = path.join(__dirname, 'admincommands');
-    const commandFilesAdmin = fs.readdirSync(commandsPathAdmin).filter(file => file.endsWith('.js'));
+    const commandFilesAdmin = fs.readdirSync(commandsPathAdmin).filter(file => file.endsWith('.ts'));
     for (const file of commandFilesAdmin) {
         const filePath = path.join(commandsPathAdmin, file);
+        if(require.resolve(filePath)){
+          delete require.cache[require.resolve(filePath)]
+        }
         const commandAdmin:Command = await require(filePath);
         const d = await commandAdmin.data();
         commandsAdmin.push(d.toJSON());
     }
-    rest.put(Routes.applicationGuildCommands(clientId?.value,guildId?.value), { body: commandsAdmin })
+    rest.put(Routes.applicationGuildCommands(clientId,guildId), { body: commandsAdmin })
         .then((data:any) => console.log(`Successfully registered ${data.length} application commands.`))
         .catch(console.error);
     
   } catch {
-    // Ensures that the client will close when you finish/error
-    await clientMongo.close();
     console.error
   }
-  await clientMongo.close();
 }
 run().catch(console.dir);

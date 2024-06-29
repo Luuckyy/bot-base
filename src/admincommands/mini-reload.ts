@@ -5,15 +5,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import CommandService from '../services/CommandService';
 
-const reload:Command = {
+const mini_reload:Command = {
 	data: async function (){ return new SlashCommandBuilder()
-		.setName('reload')
-		.setDescription('Reloads commands : Admin only')
+		.setName('mini-reload')
+		.setDescription('Reloads commands cached : Admin only')
     },
 	async execute(interaction:ChatInputCommandInteraction) {
         if(interaction.user.id == '168495998652514304'){
-            // SPAWN
-            spawn(`npm run commands`,{ stdio:"inherit", shell:true});
             await CommandService.fullReload();
             await interaction.reply({content:"Reloaded ✅"});
         } else {
@@ -22,4 +20,4 @@ const reload:Command = {
 	},
 };
 
-module.exports = reload;
+module.exports = mini_reload;
